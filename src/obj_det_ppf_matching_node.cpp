@@ -1,6 +1,6 @@
 #include "obj_det_ppf_matching_node.h"
 
-using namespace edith_msgs;
+using namespace obj_det_ppf_matching_msgs;
 
 bool DetectAndMatchObjectsROS::extractPermanentObjects (extract_permanent_objects::Request & req,
                                                         extract_permanent_objects::Response & response) {
@@ -56,7 +56,7 @@ bool DetectAndMatchObjectsROS::extractPermanentObjects (extract_permanent_object
                 pcl::io::savePCDFileBinary(debug_obj_folder + "/plane.pcd", *(obj.plane_cloud_));
 
                 //create the object message
-                edith_msgs::Object obj_msg = fromDetObjToObjMsg(obj, table_id);
+                obj_det_ppf_matching_msgs::Object obj_msg = fromDetObjToObjMsg(obj, table_id);
 
                 message_store_->insertNamed(std::to_string(obj.getID()), obj_msg);
             }
@@ -330,7 +330,7 @@ bool DetectAndMatchObjectsROS::detectAndCompareObjects (det_and_compare_obj::Req
         const DetectedObject &obj = obj_map_it->second;
         int table_id = obj_table_id[obj.getID()];
         //create the object message
-        edith_msgs::Object obj_msg = fromDetObjToObjMsg(obj, table_id);
+        obj_det_ppf_matching_msgs::Object obj_msg = fromDetObjToObjMsg(obj, table_id);
 
         message_store_->insertNamed(std::to_string(obj.getID()), obj_msg);
 
@@ -341,7 +341,7 @@ bool DetectAndMatchObjectsROS::detectAndCompareObjects (det_and_compare_obj::Req
         DetectedObject obj = obj_map_it->second;
         int table_id = obj_table_id[obj.getID()];
         //create the object message
-        edith_msgs::Object obj_msg = fromDetObjToObjMsg(obj, table_id);
+        obj_det_ppf_matching_msgs::Object obj_msg = fromDetObjToObjMsg(obj, table_id);
 
         message_store_->insertNamed(std::to_string(obj.getID()), obj_msg);
 
@@ -352,7 +352,7 @@ bool DetectAndMatchObjectsROS::detectAndCompareObjects (det_and_compare_obj::Req
         DetectedObject &obj = obj_map_it->second;
         int table_id = obj_table_id[obj.getID()];
         //create the object message
-        edith_msgs::Object obj_msg = fromDetObjToObjMsg(obj, table_id);
+        obj_det_ppf_matching_msgs::Object obj_msg = fromDetObjToObjMsg(obj, table_id);
 
         message_store_->insertNamed(std::to_string(obj.getID()), obj_msg);
 
@@ -365,8 +365,8 @@ bool DetectAndMatchObjectsROS::detectAndCompareObjects (det_and_compare_obj::Req
         const DetectedObject &obj = obj_map_it->second;
         int table_id = obj_table_id[obj.getID()];
         //create the object message
-        edith_msgs::CandidateObject obj_msg = fromDetObjToCandidateObjMsg(obj, table_id);
-        obj_msg.state = edith_msgs::ObjectStateClass::NEW;
+        obj_det_ppf_matching_msgs::CandidateObject obj_msg = fromDetObjToCandidateObjMsg(obj, table_id);
+        obj_msg.state = obj_det_ppf_matching_msgs::ObjectStateClass::NEW;
 
         message_store_->insertNamed(std::to_string(obj.getID()), obj_msg);
     }
@@ -374,8 +374,8 @@ bool DetectAndMatchObjectsROS::detectAndCompareObjects (det_and_compare_obj::Req
         const DetectedObject &obj = obj_map_it->second;
         int table_id = obj_table_id[obj.getID()];
         //create the object message
-        edith_msgs::CandidateObject obj_msg = fromDetObjToCandidateObjMsg(obj, table_id);
-        obj_msg.state = edith_msgs::ObjectStateClass::STATIC;
+        obj_det_ppf_matching_msgs::CandidateObject obj_msg = fromDetObjToCandidateObjMsg(obj, table_id);
+        obj_msg.state = obj_det_ppf_matching_msgs::ObjectStateClass::STATIC;
 
         message_store_->insertNamed(std::to_string(obj.getID()), obj_msg);
     }
@@ -383,8 +383,8 @@ bool DetectAndMatchObjectsROS::detectAndCompareObjects (det_and_compare_obj::Req
         const DetectedObject &obj = obj_map_it->second;
         int table_id = obj_table_id[obj.getID()];
         //create the object message
-        edith_msgs::CandidateObject obj_msg = fromDetObjToCandidateObjMsg(obj, table_id);
-        obj_msg.state = edith_msgs::ObjectStateClass::DISPLACED;
+        obj_det_ppf_matching_msgs::CandidateObject obj_msg = fromDetObjToCandidateObjMsg(obj, table_id);
+        obj_msg.state = obj_det_ppf_matching_msgs::ObjectStateClass::DISPLACED;
 
         message_store_->insertNamed(std::to_string(obj.getID()), obj_msg);
     }
@@ -679,17 +679,17 @@ std::map<int, Reconstruction> DetectAndMatchObjectsROS::prepareRecos (std::vecto
     std::map<int, Reconstruction> recos;
 
     /// get all extracted planes from DB
-    std::map<int, boost::shared_ptr<edith_msgs::Table>> tables = getExtractedTablesFromDB();
+    std::map<int, boost::shared_ptr<obj_det_ppf_matching_msgs::Table>> tables = getExtractedTablesFromDB();
     ROS_INFO("extracted tables from DB. Found %ld table", tables.size());
 
     if (interested_tables.size() == 0) { //get all available table numbers
-        for(std::map<int, boost::shared_ptr<edith_msgs::Table>>::iterator it = tables.begin(); it != tables.end(); ++it) {
+        for(std::map<int, boost::shared_ptr<obj_det_ppf_matching_msgs::Table>>::iterator it = tables.begin(); it != tables.end(); ++it) {
             interested_tables.push_back(it->first);
         }
     }
 
     /// for each table get reconstruction
-    std::map<int, boost::shared_ptr<edith_msgs::Table>>::iterator table_it;
+    std::map<int, boost::shared_ptr<obj_det_ppf_matching_msgs::Table>>::iterator table_it;
     for (table_it = tables.begin(); table_it != tables.end(); table_it++) {
         if (std::find(interested_tables.begin(), interested_tables.end(), table_it->first) == interested_tables.end())
             continue;
@@ -703,7 +703,7 @@ std::map<int, Reconstruction> DetectAndMatchObjectsROS::prepareRecos (std::vecto
         }
 
         /// read plane parameters
-        boost::shared_ptr<edith_msgs::Table> table = table_it->second;
+        boost::shared_ptr<obj_det_ppf_matching_msgs::Table> table = table_it->second;
         Eigen::Vector4f plane_coeffs;
         plane_coeffs << table->plane.x, table->plane.y, table->plane.z, table->plane.d;
 
@@ -742,10 +742,10 @@ std::map<int, std::vector<DetectedObject> > DetectAndMatchObjectsROS::getModelOb
     std::map<int, std::vector<DetectedObject> > model_objects;
 
     // get all model objects from DB
-    std::vector< boost::shared_ptr<edith_msgs::Object> > results;
-    message_store_->query<edith_msgs::Object>(results);
+    std::vector< boost::shared_ptr<obj_det_ppf_matching_msgs::Object> > results;
+    message_store_->query<obj_det_ppf_matching_msgs::Object>(results);
     ROS_INFO("Found %ld model objects in DB", results.size());
-    BOOST_FOREACH( boost::shared_ptr<edith_msgs::Object> p,  results)
+    BOOST_FOREACH( boost::shared_ptr<obj_det_ppf_matching_msgs::Object> p,  results)
     {
         std::tuple<int, DetectedObject> obj_tuple = fromMsgToDetObj(*p);
         int table_id = std::get<0>(obj_tuple);
@@ -759,14 +759,14 @@ std::vector<int> DetectAndMatchObjectsROS::deleteCandidateObjectsFromDB(std::vec
     std::vector<int> del_model_ids;
 
     // get all object candidates from DB
-    std::vector< boost::shared_ptr<edith_msgs::CandidateObject> > all_candidate_obj_results;
-    message_store_->query<edith_msgs::CandidateObject>(all_candidate_obj_results);
+    std::vector< boost::shared_ptr<obj_det_ppf_matching_msgs::CandidateObject> > all_candidate_obj_results;
+    message_store_->query<obj_det_ppf_matching_msgs::CandidateObject>(all_candidate_obj_results);
     ROS_INFO("Found %ld candidate objects in DB", all_candidate_obj_results.size());
 
-    BOOST_FOREACH( boost::shared_ptr<edith_msgs::CandidateObject> p,  all_candidate_obj_results) {
+    BOOST_FOREACH( boost::shared_ptr<obj_det_ppf_matching_msgs::CandidateObject> p,  all_candidate_obj_results) {
         if (table_numbers.empty() || std::find(table_numbers.begin(), table_numbers.end(), p->object.plane_id) != table_numbers.end()) {
-            std::pair< boost::shared_ptr<edith_msgs::CandidateObject>, mongo::BSONObj> result;
-            result = message_store_->queryNamed<edith_msgs::CandidateObject>(std::to_string(p->object.id));
+            std::pair< boost::shared_ptr<obj_det_ppf_matching_msgs::CandidateObject>, mongo::BSONObj> result;
+            result = message_store_->queryNamed<obj_det_ppf_matching_msgs::CandidateObject>(std::to_string(p->object.id));
             const mongo::BSONObj & meta = (result.second);
             mongo::BSONElement b_elem;
             meta.getObjectID(b_elem);
@@ -791,8 +791,8 @@ std::vector<int> DetectAndMatchObjectsROS::deleteModelObjectsFromDB(std::vector<
             for (size_t m = 0; m < model_objects.size(); m++) {
                 const DetectedObject & m_obj = model_objects[m];
 
-                std::pair< boost::shared_ptr<edith_msgs::Object>, mongo::BSONObj> result;
-                result = message_store_->queryNamed<edith_msgs::Object>(std::to_string(m_obj.getID()));
+                std::pair< boost::shared_ptr<obj_det_ppf_matching_msgs::Object>, mongo::BSONObj> result;
+                result = message_store_->queryNamed<obj_det_ppf_matching_msgs::Object>(std::to_string(m_obj.getID()));
 
                 const mongo::BSONObj & meta = (result.second);
                 //std::string id = meta["_id"];
@@ -809,20 +809,20 @@ std::vector<int> DetectAndMatchObjectsROS::deleteModelObjectsFromDB(std::vector<
     return del_model_ids;
 }
 
-std::map<int, boost::shared_ptr<edith_msgs::Table>> DetectAndMatchObjectsROS::getExtractedTablesFromDB() {
-    std::map<int, boost::shared_ptr<edith_msgs::Table>> extracted_tables;
+std::map<int, boost::shared_ptr<obj_det_ppf_matching_msgs::Table>> DetectAndMatchObjectsROS::getExtractedTablesFromDB() {
+    std::map<int, boost::shared_ptr<obj_det_ppf_matching_msgs::Table>> extracted_tables;
 
     // get all tables from DB
-    std::vector< boost::shared_ptr<edith_msgs::Table> > results;
-    message_store_->query<edith_msgs::Table>(results);
-    BOOST_FOREACH( boost::shared_ptr<edith_msgs::Table> p,  results)
+    std::vector< boost::shared_ptr<obj_det_ppf_matching_msgs::Table> > results;
+    message_store_->query<obj_det_ppf_matching_msgs::Table>(results);
+    BOOST_FOREACH( boost::shared_ptr<obj_det_ppf_matching_msgs::Table> p,  results)
     {
         extracted_tables[p->id] = p;
     }
     return extracted_tables;
 }
 
-std::tuple<int, DetectedObject> DetectAndMatchObjectsROS::fromMsgToDetObj(edith_msgs::Object obj_msg) {
+std::tuple<int, DetectedObject> DetectAndMatchObjectsROS::fromMsgToDetObj(obj_det_ppf_matching_msgs::Object obj_msg) {
     pcl::PointCloud<PointNormal>::Ptr obj_cloud(new pcl::PointCloud<PointNormal>);
     pcl::fromROSMsg(obj_msg.obj_cloud, *obj_cloud);
 
@@ -830,7 +830,7 @@ std::tuple<int, DetectedObject> DetectAndMatchObjectsROS::fromMsgToDetObj(edith_
     pcl::fromROSMsg(obj_msg.plane_cloud, *plane_cloud);
 
     pcl::ModelCoefficients::Ptr plane_coeffs(new pcl::ModelCoefficients);
-    edith_msgs::Plane plane_msg = obj_msg.plane_coeffs;
+    obj_det_ppf_matching_msgs::Plane plane_msg = obj_msg.plane_coeffs;
     std::vector<float> coeff_vec {plane_msg.x, plane_msg.y, plane_msg.z, plane_msg.d};
     plane_coeffs->values = coeff_vec;
 
@@ -841,8 +841,8 @@ std::tuple<int, DetectedObject> DetectAndMatchObjectsROS::fromMsgToDetObj(edith_
     return std::make_tuple(table_id, obj);
 }
 
-edith_msgs::Object DetectAndMatchObjectsROS::fromDetObjToObjMsg(const DetectedObject obj, int table_id) {
-    edith_msgs::Object obj_msg;
+obj_det_ppf_matching_msgs::Object DetectAndMatchObjectsROS::fromDetObjToObjMsg(const DetectedObject obj, int table_id) {
+    obj_det_ppf_matching_msgs::Object obj_msg;
 
     obj_msg.id = obj.getID();
     obj_msg.plane_id = table_id;
@@ -859,7 +859,7 @@ edith_msgs::Object DetectAndMatchObjectsROS::fromDetObjToObjMsg(const DetectedOb
     pcl::toROSMsg(*(obj.plane_cloud_), plane_cloud_msg);
     obj_msg.plane_cloud = plane_cloud_msg;
 
-    edith_msgs::Plane plane_msg;
+    obj_det_ppf_matching_msgs::Plane plane_msg;
     plane_msg.x = obj.plane_coeffs_->values[0];
     plane_msg.y = obj.plane_coeffs_->values[1];
     plane_msg.z = obj.plane_coeffs_->values[2];
@@ -871,13 +871,13 @@ edith_msgs::Object DetectAndMatchObjectsROS::fromDetObjToObjMsg(const DetectedOb
     return obj_msg;
 }
 
-edith_msgs::CandidateObject DetectAndMatchObjectsROS::fromDetObjToCandidateObjMsg(const DetectedObject obj, int table_id) {
-    edith_msgs::Object obj_msg = fromDetObjToObjMsg(obj, table_id);
+obj_det_ppf_matching_msgs::CandidateObject DetectAndMatchObjectsROS::fromDetObjToCandidateObjMsg(const DetectedObject obj, int table_id) {
+    obj_det_ppf_matching_msgs::Object obj_msg = fromDetObjToObjMsg(obj, table_id);
 
-    edith_msgs::CandidateObject candidate_obj_msg;
+    obj_det_ppf_matching_msgs::CandidateObject candidate_obj_msg;
     candidate_obj_msg.object = obj_msg;
 
-    edith_msgs::ObjectMatch match_msg;
+    obj_det_ppf_matching_msgs::ObjectMatch match_msg;
     match_msg.model_id = obj.match_.model_id;
     match_msg.object_id = obj.match_.object_id;
 

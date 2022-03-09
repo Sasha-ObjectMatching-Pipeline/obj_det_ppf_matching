@@ -12,11 +12,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 
 
-#SET(CMAKE_PREFIX_PATH "/home/edith/Software/pcl-1.10.0/build/install")
-#SET(PCL_DIR "/home/edith/Software/pcl-1.10.0/build")
-#SET(PCL_INCLUDE_DIRS "/home/edith/Software/pcl-1.10.0/build/install/include/pcl-1.10")
-#list(APPEND CMAKE_MODULE_PATH "/home/edith/Software/pcl-1.10.0/cmake/Modules")
-#find_package(PCL 1.10 REQUIRED)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -26,12 +21,11 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
-  edith_msgs
+  obj_det_ppf_matching_msgs
   pcl_conversions
 )
 
-## System dependencies are found with CMake's conventions
-#list(APPEND CMAKE_MODULE_PATH "/home/edith/Projects/TidyUpVisionPipeline/v4r_ppf/cmake")
+
 
 add_subdirectory(v4r_ppf) #this only works for folders that are physically a subdirectory. we can not set a path here
 
@@ -43,9 +37,7 @@ find_package(Boost REQUIRED COMPONENTS system program_options)
 # Glog  -- only works if glog was built with cmake ?
 # libgoogle-glog-dev package doesn't include the cmake config files
 #find_package(glog 0.4.0 REQUIRED)
-#find_library(PPF_RECOGNIZER_LIB NAMES ppf-recognizer PATHS /home/edith/Projects/TidyUpVisionPipeline/build/v4r_ppf)
-#find_library(V4R_EXTRACTS_LIB NAMES v4r-extracts PATHS /home/edith/Projects/TidyUpVisionPipeline/build/v4r_ppf)
-#find_library(PPF_LIB NAMES ppf PATHS /home/edith/Projects/TidyUpVisionPipeline/build/v4r_ppf)
+
 
 
 SET(cd_path "/home/v4r/catkin_ws/src/tidyupvisionpipeline/change_detection")
@@ -140,7 +132,7 @@ SET(cd_path "/home/v4r/catkin_ws/src/tidyupvisionpipeline/change_detection")
 catkin_package(
   INCLUDE_DIRS include
 #  LIBRARIES obj_det_ppf_matching
-  CATKIN_DEPENDS mongodb_store roscpp rospy std_msgs edith_msgs pcl_conversions
+  CATKIN_DEPENDS mongodb_store roscpp rospy std_msgs obj_det_ppf_matching_msgs pcl_conversions
 #  DEPENDS system_lib
 )
 
@@ -156,7 +148,6 @@ include_directories(
   include
   ${PCL_INCLUDE_DIRS}
   ${catkin_INCLUDE_DIRS}
-  #"/home/edith/Projects/TidyUpVisionPipeline/v4r_ppf/include/"
   ${cd_path}/include
 )
 

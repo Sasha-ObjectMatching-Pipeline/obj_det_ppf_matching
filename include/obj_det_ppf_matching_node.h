@@ -13,12 +13,12 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/ply_io.h>
 
-#include "edith_msgs/Table.h"
-#include "edith_msgs/extract_permanent_objects.h"
-#include "edith_msgs/det_and_compare_obj.h"
-#include "edith_msgs/CandidateObject.h"
-#include "edith_msgs/Object.h"
-#include "edith_msgs/ObjectStateClass.h"
+#include "obj_det_ppf_matching_msgs/Table.h"
+#include "obj_det_ppf_matching_msgs/extract_permanent_objects.h"
+#include "obj_det_ppf_matching_msgs/det_and_compare_obj.h"
+#include "obj_det_ppf_matching_msgs/CandidateObject.h"
+#include "obj_det_ppf_matching_msgs/Object.h"
+#include "obj_det_ppf_matching_msgs/ObjectStateClass.h"
 
 #include <detected_object.h>
 #include <mathhelpers.h>
@@ -32,7 +32,7 @@
 
 #include<omp.h>
 
-using namespace edith_msgs;
+using namespace obj_det_ppf_matching_msgs;
 
 typedef pcl::PointXYZRGBNormal PointNormal;
 
@@ -74,7 +74,7 @@ private:
     ros::ServiceServer extract_perm_objs_;
     ros::ServiceServer det_and_compare_objects_;
 
-    std::map<int, boost::shared_ptr<edith_msgs::Table>> extracted_tables;
+    std::map<int, boost::shared_ptr<obj_det_ppf_matching_msgs::Table>> extracted_tables;
     std::string reco_folder_;
     std::string ppf_model_path_;
     std::string ppf_config_path_;
@@ -101,9 +101,9 @@ private:
     bool updateDetectedObjects(std::vector<DetectedObject>& ref_result, std::vector<DetectedObject>& curr_result);
     int extractTableID(const pcl::PointCloud<pcl::PointXYZL>::Ptr label_cloud, const DetectedObject &obj);
 
-    std::tuple<int, DetectedObject> fromMsgToDetObj(edith_msgs::Object obj_msg); //returns table_id and object
-    edith_msgs::Object fromDetObjToObjMsg(const DetectedObject obj, int table_id);
-    edith_msgs::CandidateObject fromDetObjToCandidateObjMsg(const DetectedObject obj, int table_id);
+    std::tuple<int, DetectedObject> fromMsgToDetObj(obj_det_ppf_matching_msgs::Object obj_msg); //returns table_id and object
+    obj_det_ppf_matching_msgs::Object fromDetObjToObjMsg(const DetectedObject obj, int table_id);
+    obj_det_ppf_matching_msgs::CandidateObject fromDetObjToCandidateObjMsg(const DetectedObject obj, int table_id);
 
     void saveResultAsPCD(    std::map<int, DetectedObject> new_obj,
     std::map<int, DetectedObject> removed_obj,
@@ -136,7 +136,7 @@ public:
                                   det_and_compare_obj::Response & response);
 
     bool initialize (int argc, char ** argv);
-    std::map<int, boost::shared_ptr<edith_msgs::Table>> getExtractedTablesFromDB();
+    std::map<int, boost::shared_ptr<obj_det_ppf_matching_msgs::Table>> getExtractedTablesFromDB();
     std::map<int, std::vector<DetectedObject> > getModelObjectsFromDB();
 };
 
